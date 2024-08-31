@@ -2,7 +2,7 @@
 const ClothingItem = require("../models/clothingItem");
 // const User = require("../models/user");
 
-//add like to an item
+// add like to an item
 const likeItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
@@ -22,12 +22,11 @@ const likeItem = (req, res) =>
       console.log(err.name);
       if (err.name === "CastError") {
         return res.status(400).send({ message: err.message });
-      } else {
-        return res.status(404).send({ message: err.message });
       }
+      return res.status(404).send({ message: err.message });
     });
 
-//delete like from an item
+// delete like from an item
 const dislikeItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
@@ -47,9 +46,8 @@ const dislikeItem = (req, res) =>
       console.log(err.name);
       if (err.name === "CastError") {
         return res.status(400).send({ message: err.message });
-      } else {
-        return res.status(404).send({ message: err.message });
       }
+      return res.status(404).send({ message: err.message });
     });
 
 module.exports = { likeItem, dislikeItem };

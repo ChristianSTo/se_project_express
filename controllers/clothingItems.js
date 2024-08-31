@@ -16,7 +16,7 @@ const getItems = (req, res) => {
 
 // create an item (POST)
 const createItem = (req, res) => {
-  //define the properties on the item
+  // define the properties on the item
   const { name, weather, imageUrl } = req.body;
   const userId = req.user._id;
   ClothingItem.create({ name, weather, imageUrl, author: userId })
@@ -35,7 +35,7 @@ const createItem = (req, res) => {
 
 // GET one item by ID
 const getItem = (req, res) => {
-  //define the id
+  // define the id
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
