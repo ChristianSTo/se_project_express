@@ -1,6 +1,6 @@
 const User = require("../models/user");
 
-//GET users (all of them)
+// GET users (all of them)
 
 const getUsers = (req, res) => {
   console.log("IN CONTROLLER");
