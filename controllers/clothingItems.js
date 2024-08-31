@@ -1,6 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
 
-//GET items (all of them)
+// GET items (all of them)
 
 const getItems = (req, res) => {
   console.log("IN CONTROLLER");
@@ -51,16 +51,17 @@ const getItem = (req, res) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(400).send({ message: err.message });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });
     });
 };
 
-//Update one item
+// Update one item
 const updateItem = (req, res) => {
-  //define the id and the attributes
+  // define the id and the attributes
   const { itemId } = req.params;
   const { name, weather, imageUrl } = req.body;
 
@@ -77,16 +78,17 @@ const updateItem = (req, res) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(400).send({ message: err.message });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });
     });
 };
 
-//delete one item
+// delete one item
 const deleteItem = (req, res) => {
-  //define the id
+  // define the id
   const { itemId } = req.params;
 
   ClothingItem.findByIdAndDelete(itemId)
@@ -102,7 +104,8 @@ const deleteItem = (req, res) => {
       console.error(err);
       if (err.name === "CastError") {
         return res.status(400).send({ message: "Invalid item ID" });
-      } else if (err.statusCode === 404) {
+      }
+      if (err.statusCode === 404) {
         return res.status(404).send({ message: "Item ID not found" });
       }
       return res.status(500).send({ message: err.message });
