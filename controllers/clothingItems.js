@@ -1,5 +1,7 @@
 const ClothingItem = require("../models/clothingItem");
 
+const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("./errors");
+
 // GET items (all of them)
 
 const getItems = (req, res) => {
@@ -10,7 +12,9 @@ const getItems = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(DEFAULT)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -19,7 +23,7 @@ const createItem = (req, res) => {
   // define the properties on the item
   const { name, weather, imageUrl } = req.body;
   const userId = req.user._id;
-  ClothingItem.create({ name, weather, imageUrl, author: userId })
+  ClothingItem.create({ name, weather, imageUrl, owner: userId })
     .then((item) => {
       res.status(201).send({ data: item });
     })
@@ -27,9 +31,11 @@ const createItem = (req, res) => {
       console.error(err);
       console.log(err.name);
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err.message });
+        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
       }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(DEFAULT)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -41,7 +47,7 @@ const getItem = (req, res) => {
   ClothingItem.findById(itemId)
     .orFail(() => {
       const error = new Error("Item ID not found");
-      error.statusCode = 404;
+      error.statusCode = NOT_FOUND;
       throw error;
     })
     .then((item) => {
@@ -50,39 +56,14 @@ const getItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
       if (err.name === "CastError") {
-        return res.status(400).send({ message: err.message });
+        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
       }
-      return res.status(500).send({ message: err.message });
-    });
-};
-
-// Update one item
-const updateItem = (req, res) => {
-  // define the id and the attributes
-  const { itemId } = req.params;
-  const { name, weather, imageUrl } = req.body;
-
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { name, weather, imageUrl } })
-    .orFail(() => {
-      const error = new Error("Item ID not found");
-      error.statusCode = 404;
-      throw error;
-    })
-    .then((item) => {
-      res.status(200).send({ data: item });
-    })
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
-      }
-      if (err.name === "CastError") {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(DEFAULT)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -94,7 +75,7 @@ const deleteItem = (req, res) => {
   ClothingItem.findByIdAndDelete(itemId)
     .orFail(() => {
       const error = new Error("Item ID not found");
-      error.statusCode = 404;
+      error.statusCode = NOT_FOUND;
       throw error;
     })
     .then((item) => {
@@ -103,13 +84,15 @@ const deleteItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid item ID" });
+        return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
-      if (err.statusCode === 404) {
-        return res.status(404).send({ message: "Item ID not found" });
+      if (err.statusCode === NOT_FOUND) {
+        return res.status(NOT_FOUND).send({ message: "Item ID not found" });
       }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(DEFAULT)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
-module.exports = { getItems, createItem, getItem, updateItem, deleteItem };
+module.exports = { getItems, createItem, getItem, deleteItem };

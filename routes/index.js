@@ -1,5 +1,7 @@
 const router = require("express").Router();
 
+const { NOT_FOUND } = require("./errors");
+
 // user router
 const userRouter = require("./users");
 
@@ -16,7 +18,7 @@ const likeRouter = require("./likes");
 router.use("/items", likeRouter);
 
 router.use((req, res) => {
-  res.status(500).send({ message: "Router not found" });
+  res.status(NOT_FOUND).send({ message: "Router not found" });
 });
 
 module.exports = router;

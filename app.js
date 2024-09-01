@@ -27,10 +27,6 @@ app.use((req, res, next) => {
 
 app.use("/", mainRouter);
 
-app.use((req, res) => {
-  res.status(404).json({ message: "Requested resource not found" });
-});
-
 app.listen(PORT, () => {
   console.log(`Server is Running: ${PORT}`);
 });

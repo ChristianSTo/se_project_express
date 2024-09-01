@@ -11,6 +11,7 @@ const clothingItem = new mongoose.Schema({
 
   weather: {
     type: String,
+    enum: ["hot", "warm", "cold"],
     required: [true, "the weather field is required"],
   },
 
@@ -26,12 +27,15 @@ const clothingItem = new mongoose.Schema({
   },
   owner: {
     type: String,
+    required: [true, "the owner field is required"],
   },
   likes: {
-    type: String,
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+    default: [],
   },
-  createAt: {
-    type: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
