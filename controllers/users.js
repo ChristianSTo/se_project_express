@@ -1,6 +1,6 @@
 const User = require("../models/user");
 
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("./errors");
+const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
 
 // GET users (all of them)
 

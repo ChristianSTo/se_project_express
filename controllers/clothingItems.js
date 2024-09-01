@@ -1,6 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
 
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("./errors");
+const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
 
 // GET items (all of them)
 

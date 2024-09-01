@@ -1,7 +1,7 @@
 // const Like = require("../models/like");
 const ClothingItem = require("../models/clothingItem");
 
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("./errors");
+const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
 
 // add like to an item
 const likeItem = (req, res) =>
