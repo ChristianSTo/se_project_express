@@ -101,27 +101,29 @@ const updateProfile = (req, res) => {
   // find the user by their id, then
   // indicate that the name and avatar will be new
   // also set runValidators
-  User.findByIdAndUpdate(
-    userId,
-    { name, avatar },
-    { new: true, runValidators: true }
-  )
-    .orFail(() => {
-      const error = new Error("User ID not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
-    })
-    // change the user's info to the new info
-    .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "data not found" });
-      }
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Validation Error" });
-      }
-      return res.status(DEFAULT).send({ message: "Internal Server Error" });
-    });
+  return (
+    User.findByIdAndUpdate(
+      userId,
+      { name, avatar },
+      { new: true, runValidators: true }
+    )
+      .orFail(() => {
+        const error = new Error("User ID not found");
+        error.statusCode = NOT_FOUND;
+        throw error;
+      })
+      // change the user's info to the new info
+      .then((user) => res.status(200).send(user))
+      .catch((err) => {
+        console.error(err);
+        if (err.name === "DocumentNotFoundError") {
+          return res.status(NOT_FOUND).send({ message: "data not found" });
+        }
+        if (err.name === "ValidationError") {
+          return res.status(BAD_REQUEST).send({ message: "Validation Error" });
+        }
+        return res.status(DEFAULT).send({ message: "Internal Server Error" });
+      })
+  );
 };
 module.exports = { createUser, loginUser, getCurrentUser, updateProfile };
