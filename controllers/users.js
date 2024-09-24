@@ -77,7 +77,7 @@ const loginUser = (req, res) => {
         expiresIn: "7d",
       });
       // send the token to the server
-      res.status(200).send({ token });
+      return res.status(200).send({ token });
     })
     .catch((err) => {
       console.log(err);
