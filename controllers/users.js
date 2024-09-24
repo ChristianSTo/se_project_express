@@ -4,6 +4,7 @@ const User = require("../models/user");
 
 const {
   BAD_REQUEST,
+  UNAUTHORIZED,
   NOT_FOUND,
   CONFLICT,
   DEFAULT,
@@ -51,7 +52,7 @@ const getCurrentUser = (req, res) => {
       throw error;
     })
     .then((user) => {
-      return res.status(200).send(user);
+      res.status(200).send(user);
     })
     .catch((err) => {
       console.error(err);
