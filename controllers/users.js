@@ -112,9 +112,7 @@ const updateProfile = (req, res) => {
       throw error;
     })
     // change the user's info to the new info
-    .then((user) => {
-      return res.status(200).send(user);
-    })
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
