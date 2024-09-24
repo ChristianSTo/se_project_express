@@ -1,9 +1,9 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
-const { JWT_SECRET } = require("../utils/config.js");
+const { JWT_SECRET } = require("../utils/config");
 
 // create a user (POST)
 const createUser = (req, res) => {
@@ -113,7 +113,7 @@ const updateProfile = (req, res) => {
     })
     // change the user's info to the new info
     .then((user) => {
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       console.error(err);

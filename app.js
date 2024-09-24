@@ -23,7 +23,7 @@ mongoose
 app.use(express.json());
 app.use(cors());
 
-//In app.js, create two POST handlers for the /signin and /signup routes.
+// in app.js, create two POST handlers for the /signin and /signup routes.
 app.post("/signin", loginUser);
 app.post("/signup", createUser);
 

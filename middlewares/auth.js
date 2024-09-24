@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../utils/config.js");
+const { JWT_SECRET } = require("../utils/config");
 
-//this is middleware, to get the token that was created by the login function for the getCurrentUser function
+// this is middleware, to get the token that was created by the login function for the getCurrentUser function
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
@@ -20,7 +20,7 @@ const auth = (req, res, next) => {
 
   req.user = payload;
 
-  next();
+  return next();
 };
 
 module.exports = { auth };
