@@ -1,6 +1,10 @@
-const express = require("express");
 const mongoose = require("mongoose");
+
+const express = require("express");
+const cors = require("cors");
 const mainRouter = require("./routes/index");
+const { createUser, loginUser } = require("./controllers/users");
+const { auth } = require("./middlewares/auth");
 
 console.log(mainRouter);
 
@@ -17,14 +21,13 @@ mongoose
   });
 
 app.use(express.json());
+app.use(cors());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "66d2a5420bcb6521491ed141", // paste the _id of the test user created in the previous step
-  };
-  next();
-});
+//In app.js, create two POST handlers for the /signin and /signup routes.
+app.post("/signin", loginUser);
+app.post("/signup", createUser);
 
+app.use(auth);
 app.use("/", mainRouter);
 
 app.listen(PORT, () => {

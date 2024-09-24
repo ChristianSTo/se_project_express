@@ -1,6 +1,13 @@
+const mongoose = require("mongoose");
+
 const ClothingItem = require("../models/clothingItem");
 
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
+const {
+  BAD_REQUEST,
+  FORBIDDEN,
+  NOT_FOUND,
+  DEFAULT,
+} = require("../utils/errors");
 
 // GET items (all of them)
 
@@ -69,8 +76,12 @@ const getItem = (req, res) => {
 
 // delete one item
 const deleteItem = (req, res) => {
-  // define the id
+  // define the item id
   const { itemId } = req.params;
+  console.log(`Received request to delete item with Item ID: ${itemId}`);
+  // define the user id
+  const userId = req.user._id;
+  console.log(`Deleting for user with User ID: ${userId}`);
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail(() => {
@@ -79,7 +90,11 @@ const deleteItem = (req, res) => {
       throw error;
     })
     .then((item) => {
-      res.status(200).send({ data: item });
+      if (item.owner.toString() !== userId.toString()) {
+        res.status(FORBIDDEN).send({ message: "Forbidden: Cannot Delete" });
+      } else {
+        res.status(200).send({ data: item });
+      }
     })
     .catch((err) => {
       console.error(err);
