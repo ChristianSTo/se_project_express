@@ -2,7 +2,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  CONFLICT,
+  DEFAULT,
+} = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 // create a user (POST)
@@ -25,7 +30,7 @@ const createUser = (req, res) => {
         return res.status(BAD_REQUEST).send({ message: "Invalid data" });
       }
       if (err.code === 11000) {
-        return res.status(409).send({ message: "Email already exists" });
+        return res.status(CONFLICT).send({ message: "Email already exists" });
       }
       return res.status(DEFAULT).send({ message: "Internal Server Error" });
     });
@@ -46,17 +51,25 @@ const getCurrentUser = (req, res) => {
       throw error;
     })
     .then((user) => {
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
+      if (
+        err.message === "Invalid email or password" ||
+        err.message === "Incorrect email or password"
+      ) {
+        return res
+          .status(UNAUTHORIZED)
+          .send({ message: "Unauthorized credentials" });
+      }
+      if (err.statusCode === NOT_FOUND) {
         return res.status(NOT_FOUND).send({ message: "User not found" });
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid data" });
       }
-      return res.status(NOT_FOUND).send({ message: "User not found" });
+      return res.status(DEFAULT).send({ message: "Internal Server Error" });
     });
 };
 
@@ -81,14 +94,6 @@ const loginUser = (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: "email or password not found" });
-      }
-      if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
-      }
       return res.status(BAD_REQUEST).send({ message: "User not found" });
     });
 };
@@ -116,7 +121,7 @@ const updateProfile = (req, res) => {
       .then((user) => res.status(200).send(user))
       .catch((err) => {
         console.error(err);
-        if (err.name === "DocumentNotFoundError") {
+        if (err.statusCode === NOT_FOUND) {
           return res.status(NOT_FOUND).send({ message: "data not found" });
         }
         if (err.name === "ValidationError") {

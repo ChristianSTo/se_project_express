@@ -81,7 +81,7 @@ const deleteItem = (req, res) => {
   const userId = req.user._id;
   console.log(`Deleting for user with User ID: ${userId}`);
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail(() => {
       const error = new Error("Item ID not found");
       error.statusCode = NOT_FOUND;
@@ -89,10 +89,13 @@ const deleteItem = (req, res) => {
     })
     .then((item) => {
       if (item.owner.toString() !== userId.toString()) {
-        res.status(FORBIDDEN).send({ message: "Forbidden: Cannot Delete" });
-      } else {
-        res.status(200).send({ data: item });
+        return res
+          .status(FORBIDDEN)
+          .send({ message: "Forbidden: Cannot Delete" });
       }
+      return item
+        .deleteOne()
+        .then(() => res.status(200).send({ message: "Succesfully Deleted" }));
     })
     .catch((err) => {
       console.error(err);

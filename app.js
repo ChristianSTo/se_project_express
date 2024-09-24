@@ -4,7 +4,6 @@ const express = require("express");
 const cors = require("cors");
 const mainRouter = require("./routes/index");
 const { createUser, loginUser } = require("./controllers/users");
-const { auth } = require("./middlewares/auth");
 
 console.log(mainRouter);
 
@@ -27,7 +26,6 @@ app.use(cors());
 app.post("/signin", loginUser);
 app.post("/signup", createUser);
 
-app.use(auth);
 app.use("/", mainRouter);
 
 app.listen(PORT, () => {
