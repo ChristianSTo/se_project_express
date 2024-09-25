@@ -56,14 +56,7 @@ const getCurrentUser = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      if (
-        err.message === "Invalid email or password" ||
-        err.message === "Incorrect email or password"
-      ) {
-        return res
-          .status(UNAUTHORIZED)
-          .send({ message: "Unauthorized credentials" });
-      }
+
       if (err.statusCode === NOT_FOUND) {
         return res.status(NOT_FOUND).send({ message: "User not found" });
       }
@@ -95,7 +88,15 @@ const loginUser = (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      return res.status(BAD_REQUEST).send({ message: "User not found" });
+      if (
+        err.message === "Invalid email or password" ||
+        err.message === "Incorrect email or password"
+      ) {
+        return res
+          .status(UNAUTHORIZED)
+          .send({ message: "Unauthorized credentials" });
+      }
+      return res.status(DEFAULT).send({ message: "Internal Server Error" });
     });
 };
 
