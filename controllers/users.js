@@ -1,6 +1,12 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const BadRequestError = require("../errors/BadRequestError");
+const ConflictError = require("../errors/ConflictError");
+const DefaultError = require("../errors/DefaultError");
+const ForbiddenError = require("../errors/ForbiddenError");
+const NotFoundError = require("../errors/NotFoundError");
+const UnauthorizedError = require("../errors/UnauthorizedError");
 
 const {
   BAD_REQUEST,
@@ -12,13 +18,16 @@ const {
 const { JWT_SECRET } = require("../utils/config");
 
 // create a user (POST)
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   // define the relevant info needed
   const { name, avatar, email, password } = req.body;
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => {
+      if (!user) {
+        throw new NotFoundError("User not created");
+      }
       res.status(201).send({
         _id: user._id,
         email: user.email,
@@ -28,20 +37,19 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+        return next(new BadRequestError("Invalid data"));
       }
       if (err.code === 11000) {
-        return res.status(CONFLICT).send({ message: "Email already exists" });
+        return next(new ConflictError("Email already exists"));
       }
-      return res.status(DEFAULT).send({ message: "Internal Server Error" });
+      next(new DefaultError("Internal Server Error"));
     });
 };
 
 // GET current logged-in user by their token
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   // define the id
   const userId = req.user._id;
-  // const { userId } = req.params;
   console.log(`User ID: ${userId}`);
   console.log(`User Name: ${req.user.name}`);
 
@@ -56,28 +64,26 @@ const getCurrentUser = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-
-      if (err.statusCode === NOT_FOUND) {
-        return res.status(NOT_FOUND).send({ message: "User not found" });
-      }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+        return next(new BadRequestError("Invalid data"));
       }
-      return res.status(DEFAULT).send({ message: "Internal Server Error" });
+      next(err);
     });
 };
 
 // login one user
-const loginUser = (req, res) => {
+const loginUser = (req, res, next) => {
   // define the relevant info needed
   const { email, password } = req.body;
   if (!email || !password) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "Email and password must be provided" });
+    return next(new BadRequestError("Email and password must be provided"));
   }
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      if (!user) {
+        throw new UnauthorizedError("Incorrect credientials");
+      }
       // we get the user object if the email and password match
       // (this is pasted from the instructions)
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
@@ -92,15 +98,13 @@ const loginUser = (req, res) => {
         err.message === "Invalid email or password" ||
         err.message === "Incorrect email or password"
       ) {
-        return res
-          .status(UNAUTHORIZED)
-          .send({ message: "Unauthorized credentials" });
+        return next(new UnauthorizedError("Unauthorized credentials"));
       }
-      return res.status(DEFAULT).send({ message: "Internal Server Error" });
+      next(new DefaultError("Internal Server Error"));
     });
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   // define the relevant info needed
   const { name, avatar } = req.body;
   // define the id
@@ -120,16 +124,15 @@ const updateProfile = (req, res) => {
         throw error;
       })
       // change the user's info to the new info
-      .then((user) => res.status(200).send(user))
+      .then((user) => {
+        res.status(200).send(user);
+      })
       .catch((err) => {
         console.error(err);
-        if (err.statusCode === NOT_FOUND) {
-          return res.status(NOT_FOUND).send({ message: "data not found" });
-        }
         if (err.name === "ValidationError") {
-          return res.status(BAD_REQUEST).send({ message: "Validation Error" });
+          return next(new BadRequestError("Invalid data"));
         }
-        return res.status(DEFAULT).send({ message: "Internal Server Error" });
+        next(err);
       })
   );
 };

@@ -2,6 +2,10 @@ const router = require("express").Router();
 
 const { NOT_FOUND } = require("../utils/errors");
 
+router.get("/", (req, res) => {
+  res.send("Welcome to the homepage!"); // You can change this to whatever message or content you want
+});
+
 // user router
 const userRouter = require("./users");
 
