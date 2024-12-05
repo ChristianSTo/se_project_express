@@ -17,3 +17,6 @@ Technologies and techniques used: This backend project uses:
 `npm run start` — to launch the server 
 
 `npm run dev` — to launch the server with the hot reload feature
+
+## Domain Name
+https://wearable.donhoo.com/
