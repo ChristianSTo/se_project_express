@@ -30,6 +30,13 @@ app.use(cors());
 //enable the request logger before all route handlers
 app.use(requestLogger);
 
+//set up server crash testing
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 //in app.js, create two POST handlers for the /signin and /signup routes.
 app.post("/signin", loginUser);
 app.post("/signup", createUser);
