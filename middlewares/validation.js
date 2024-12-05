@@ -1,5 +1,13 @@
 const { Joi, celebrate } = require("celebrate");
 const validator = require("validator");
+const router = require("express").Router();
+const { createUser, loginUser } = require("../controllers/users");
+const {
+  createItem,
+  getItem,
+  deleteItem,
+} = require("../controllers/clothingItems");
+const { likeItem, dislikeItem } = require("../controllers/likes");
 
 router.post(
   "/",

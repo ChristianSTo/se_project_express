@@ -27,30 +27,30 @@ mongoose
 app.use(express.json());
 app.use(cors());
 
-//enable the request logger before all route handlers
+// enable the request logger before all route handlers
 app.use(requestLogger);
 
-//set up server crash testing
+// set up server crash testing
 app.get("/crash-test", () => {
   setTimeout(() => {
     throw new Error("Server will crash now");
   }, 0);
 });
 
-//in app.js, create two POST handlers for the /signin and /signup routes.
+// in app.js, create two POST handlers for the /signin and /signup routes.
 app.post("/signin", loginUser);
 app.post("/signup", createUser);
 
-//our routes
+// our routes
 app.use("/", mainRouter);
 
-//error logger needs to be enabled after the route handlers and before the error handlers:
+// error logger needs to be enabled after the route handlers and before the error handlers:
 app.use(errorLogger);
 
-//celebrate error handler
+// celebrate error handler
 app.use(errors());
 
-//our centralized handler
+// our centralized handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {

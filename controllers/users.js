@@ -4,17 +4,10 @@ const User = require("../models/user");
 const BadRequestError = require("../errors/BadRequestError");
 const ConflictError = require("../errors/ConflictError");
 const DefaultError = require("../errors/DefaultError");
-const ForbiddenError = require("../errors/ForbiddenError");
 const NotFoundError = require("../errors/NotFoundError");
 const UnauthorizedError = require("../errors/UnauthorizedError");
 
-const {
-  BAD_REQUEST,
-  UNAUTHORIZED,
-  NOT_FOUND,
-  CONFLICT,
-  DEFAULT,
-} = require("../utils/errors");
+const { NOT_FOUND } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 // create a user (POST)
@@ -42,7 +35,7 @@ const createUser = (req, res, next) => {
       if (err.code === 11000) {
         return next(new ConflictError("Email already exists"));
       }
-      next(new DefaultError("Internal Server Error"));
+      return next(new DefaultError("Internal Server Error"));
     });
 };
 
@@ -67,7 +60,7 @@ const getCurrentUser = (req, res, next) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid data"));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -100,7 +93,7 @@ const loginUser = (req, res, next) => {
       ) {
         return next(new UnauthorizedError("Unauthorized credentials"));
       }
-      next(new DefaultError("Internal Server Error"));
+      return next(new DefaultError("Internal Server Error"));
     });
 };
 
@@ -132,7 +125,7 @@ const updateProfile = (req, res, next) => {
         if (err.name === "ValidationError") {
           return next(new BadRequestError("Invalid data"));
         }
-        next(err);
+        return next(err);
       })
   );
 };
