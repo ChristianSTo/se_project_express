@@ -21,8 +21,6 @@ const likeRouter = require("./likes");
 
 router.use("/items", likeRouter);
 
-router.use((req, res, next) => {
-  return next(new NotFoundError("Valid ID not found"));
-});
+router.use((req, res, next) => next(new NotFoundError("Valid ID not found")));
 
 module.exports = router;

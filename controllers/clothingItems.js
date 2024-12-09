@@ -45,9 +45,7 @@ const getItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
-    .orFail(() => {
-      return next(new NotFoundError("Item ID not created"));
-    })
+    .orFail(() => next(new NotFoundError("Item ID not created")))
     .then((item) => {
       res.status(200).send(item);
     })
@@ -73,9 +71,7 @@ const deleteItem = (req, res, next) => {
   console.log(`Deleting for user with User ID: ${userId}`);
 
   ClothingItem.findById(itemId)
-    .orFail(() => {
-      return next(new NotFoundError("Item ID not created"));
-    })
+    .orFail(() => next(new NotFoundError("Item ID not created")))
     .then((item) => {
       if (item.owner.toString() !== userId.toString()) {
         return next(new ForbiddenError("Forbidden: Cannot delete"));

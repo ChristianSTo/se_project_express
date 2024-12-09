@@ -13,9 +13,7 @@ const likeItem = (req, res, next) =>
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
     { new: true }
   )
-    .orFail(() => {
-      return next(new NotFoundError("Valid ID not found"));
-    })
+    .orFail(() => next(new NotFoundError("Valid ID not found")))
     .then((item) => {
       res.status(201).send({ data: item });
     })
@@ -38,9 +36,7 @@ const dislikeItem = (req, res, next) =>
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true }
   )
-    .orFail(() => {
-      return next(new NotFoundError("Valid ID not found"));
-    })
+    .orFail(() => next(new NotFoundError("Valid ID not found")))
     .then((item) => {
       res.status(200).send({ data: item });
     })

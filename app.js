@@ -2,13 +2,13 @@ const mongoose = require("mongoose");
 const { errors } = require("celebrate");
 const cors = require("cors");
 
+const express = require("express");
+require("dotenv").config();
+
 const {
   signUpValidation,
   signInValidation,
 } = require("./middlewares/validation");
-
-const express = require("express");
-require("dotenv").config();
 
 const mainRouter = require("./routes/index");
 const { createUser, loginUser } = require("./controllers/users");
