@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const { NOT_FOUND } = require("../utils/errors");
+const NotFoundError = require("../errors/NotFoundError");
 
 router.get("/", (req, res) => {
   res.send("Welcome to the homepage!"); // You can change this to whatever message or content you want
@@ -22,7 +22,7 @@ const likeRouter = require("./likes");
 router.use("/items", likeRouter);
 
 router.use((req, res) => {
-  res.status(NOT_FOUND).send({ message: "Router not found" });
+  return next(new NotFoundError("Valid ID not found"));
 });
 
 module.exports = router;

@@ -1,15 +1,14 @@
 const ClothingItem = require("../models/clothingItem");
+const BadRequestError = require("../errors/BadRequestError");
+const DefaultError = require("../errors/DefaultError");
+const ForbiddenError = require("../errors/ForbiddenError");
+const NotFoundError = require("../errors/NotFoundError");
 
-const {
-  BAD_REQUEST,
-  FORBIDDEN,
-  NOT_FOUND,
-  DEFAULT,
-} = require("../utils/errors");
+const { NOT_FOUND } = require("../utils/errors");
 
 // GET items (all of them)
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   console.log("IN CONTROLLER");
   ClothingItem.find({})
     .then((items) => {
@@ -17,14 +16,12 @@ const getItems = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res
-        .status(DEFAULT)
-        .send({ message: "An error has occurred on the server" });
+      return next(new DefaultError("Internal Server Error"));
     });
 };
 
 // create an item (POST)
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   // define the properties on the item
   const { name, weather, imageUrl } = req.body;
   const userId = req.user._id;
@@ -36,24 +33,20 @@ const createItem = (req, res) => {
       console.error(err);
       console.log(err.name);
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+        return next(new BadRequestError("Invalid data"));
       }
-      return res
-        .status(DEFAULT)
-        .send({ message: "An error has occurred on the server" });
+      return next(new DefaultError("Internal Server Error"));
     });
 };
 
 // GET one item by ID
-const getItem = (req, res) => {
+const getItem = (req, res, next) => {
   // define the id
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
     .orFail(() => {
-      const error = new Error("Item ID not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      return next(new NotFoundError("Item ID not created"));
     })
     .then((item) => {
       res.status(200).send(item);
@@ -61,19 +54,17 @@ const getItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
+        return next(new NotFoundError("Item not created"));
       }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+        return next(new BadRequestError("Invalid data"));
       }
-      return res
-        .status(DEFAULT)
-        .send({ message: "An error has occurred on the server" });
+      return next(new DefaultError("Internal Server Error"));
     });
 };
 
 // delete one item
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   // define the item id
   const { itemId } = req.params;
   console.log(`Received request to delete item with Item ID: ${itemId}`);
@@ -83,15 +74,11 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findById(itemId)
     .orFail(() => {
-      const error = new Error("Item ID not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      return next(new NotFoundError("Item ID not created"));
     })
     .then((item) => {
       if (item.owner.toString() !== userId.toString()) {
-        return res
-          .status(FORBIDDEN)
-          .send({ message: "Forbidden: Cannot Delete" });
+        return next(new ForbiddenError("Forbidden: Cannot delete"));
       }
       return item
         .deleteOne()
@@ -100,14 +87,12 @@ const deleteItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+        return next(new BadRequestError("Invalid data"));
       }
       if (err.statusCode === NOT_FOUND) {
-        return res.status(NOT_FOUND).send({ message: "Item ID not found" });
+        throw next(new NotFoundError("Item not created"));
       }
-      return res
-        .status(DEFAULT)
-        .send({ message: "An error has occurred on the server" });
+      return next(new DefaultError("Internal Server Error"));
     });
 };
 

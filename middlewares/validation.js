@@ -1,88 +1,34 @@
 const { Joi, celebrate } = require("celebrate");
 const validator = require("validator");
-const router = require("express").Router();
-const { createUser, loginUser } = require("../controllers/users");
-const {
-  createItem,
-  getItem,
-  deleteItem,
-} = require("../controllers/clothingItems");
-const { likeItem, dislikeItem } = require("../controllers/likes");
 
-router.post(
-  "/",
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      imageUrl: Joi.string().uri().required(),
-    }),
+const itemValidation = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    imageUrl: Joi.string().uri().required(),
   }),
-  createItem
-);
+});
 
-router.post(
-  "/signup",
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      email: Joi.string().required().email(),
-      avatar: Joi.string().uri().required(),
-      password: Joi.string().required(),
-    }),
+const signUpValidation = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    email: Joi.string().required().email(),
+    avatar: Joi.string().uri().required(),
+    password: Joi.string().required(),
   }),
-  createUser
-);
+});
 
-router.post(
-  "/signin",
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required(),
-    }),
+const signInValidation = celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
   }),
-  loginUser
-);
+});
 
-router.get(
-  "/:itemId",
-  celebrate({
-    params: Joi.object().keys({
-      itemId: Joi.string().length(24).hex().required(),
-    }),
+const itemIdValidation = celebrate({
+  params: Joi.object().keys({
+    itemId: Joi.string().length(24).hex().required(),
   }),
-  getItem
-);
-
-router.delete(
-  "/:itemId",
-  celebrate({
-    params: Joi.object().keys({
-      itemId: Joi.string().length(24).hex().required(),
-    }),
-  }),
-  deleteItem
-);
-
-router.put(
-  "/:itemId/likes",
-  celebrate({
-    params: Joi.object().keys({
-      itemId: Joi.string().length(24).hex().required(),
-    }),
-  }),
-  likeItem
-);
-
-router.delete(
-  "/:itemId/likes",
-  celebrate({
-    params: Joi.object().keys({
-      itemId: Joi.string().length(24).hex().required(),
-    }),
-  }),
-  dislikeItem
-);
+});
 
 const validateURL = (value, helpers) => {
   if (validator.isURL(value)) {
@@ -103,6 +49,8 @@ module.exports.validateCardBody = celebrate({
       "string.empty": 'The "imageUrl" field must be filled in',
       "string.uri": 'the "imageUrl" field must be a valid url',
     }),
+
+    weather: Joi.string().valid("hot", "warm", "cold").required(),
   }),
 });
 
@@ -118,6 +66,12 @@ module.exports.validateAvatar = celebrate({
 module.exports.validateId = celebrate({
   params: Joi.object().keys({
     itemId: Joi.string().hex().length(24).required(),
-    userId: Joi.string().hex().length(24).required(),
   }),
 });
+
+module.exports = {
+  itemValidation,
+  signUpValidation,
+  signInValidation,
+  itemIdValidation,
+};

@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const { errors } = require("celebrate");
+const {
+  signUpValidation,
+  signInValidation,
+} = require("./middlewares/validation");
 
 const express = require("express");
 const cors = require("cors");
@@ -38,8 +42,8 @@ app.get("/crash-test", () => {
 });
 
 // in app.js, create two POST handlers for the /signin and /signup routes.
-app.post("/signin", loginUser);
-app.post("/signup", createUser);
+app.post("/signin", signInValidation, loginUser);
+app.post("/signup", signUpValidation, createUser);
 
 // our routes
 app.use("/", mainRouter);

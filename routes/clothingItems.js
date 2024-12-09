@@ -1,5 +1,9 @@
 const router = require("express").Router();
 const { auth } = require("../middlewares/auth");
+const {
+  itemValidation,
+  itemIdValidation,
+} = require("../middlewares/validation");
 
 const {
   getItems,
@@ -11,9 +15,9 @@ const {
 router.get("/", getItems);
 
 router.use(auth);
-router.get("/:itemId", getItem);
+router.get("/:itemId", itemIdValidation, getItem);
 
-router.post("/", createItem);
-router.delete("/:itemId", deleteItem);
+router.post("/", itemValidation, createItem);
+router.delete("/:itemId", itemIdValidation, deleteItem);
 
 module.exports = router;
