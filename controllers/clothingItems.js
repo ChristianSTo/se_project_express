@@ -9,7 +9,6 @@ const { NOT_FOUND } = require("../utils/errors");
 // GET items (all of them)
 
 const getItems = (req, res, next) => {
-  console.log("IN CONTROLLER");
   ClothingItem.find({})
     .then((items) => {
       res.status(200).send(items);
@@ -31,7 +30,6 @@ const createItem = (req, res, next) => {
     })
     .catch((err) => {
       console.error(err);
-      console.log(err.name);
       if (err.name === "ValidationError") {
         return next(new BadRequestError("Invalid data"));
       }
@@ -65,10 +63,8 @@ const getItem = (req, res, next) => {
 const deleteItem = (req, res, next) => {
   // define the item id
   const { itemId } = req.params;
-  console.log(`Received request to delete item with Item ID: ${itemId}`);
   // define the user id
   const userId = req.user._id;
-  console.log(`Deleting for user with User ID: ${userId}`);
 
   ClothingItem.findById(itemId)
     .orFail(() => next(new NotFoundError("Item ID not created")))

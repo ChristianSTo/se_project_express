@@ -43,8 +43,6 @@ const createUser = (req, res, next) => {
 const getCurrentUser = (req, res, next) => {
   // define the id
   const userId = req.user._id;
-  console.log(`User ID: ${userId}`);
-  console.log(`User Name: ${req.user.name}`);
 
   User.findById(userId)
     .orFail(() => {
@@ -86,7 +84,6 @@ const loginUser = (req, res, next) => {
       return res.status(200).send({ token });
     })
     .catch((err) => {
-      console.log(err);
       if (
         err.message === "Invalid email or password" ||
         err.message === "Incorrect email or password"

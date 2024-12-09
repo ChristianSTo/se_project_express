@@ -19,7 +19,6 @@ const likeItem = (req, res, next) =>
     })
     .catch((err) => {
       console.error(err);
-      console.log(err.name);
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid data"));
       }
@@ -42,7 +41,6 @@ const dislikeItem = (req, res, next) =>
     })
     .catch((err) => {
       console.error(err);
-      console.log(err.name);
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid data"));
       }
