@@ -15,8 +15,6 @@ const { createUser, loginUser } = require("./controllers/users");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
-console.log(mainRouter);
-
 const app = express();
 const { PORT = 3001 } = process.env;
 
