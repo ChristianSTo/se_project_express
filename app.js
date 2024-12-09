@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
 const { errors } = require("celebrate");
+const cors = require("cors");
+
 const {
   signUpValidation,
   signInValidation,
 } = require("./middlewares/validation");
 
 const express = require("express");
-const cors = require("cors");
 require("dotenv").config();
 
 const mainRouter = require("./routes/index");
