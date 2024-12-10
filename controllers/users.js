@@ -35,7 +35,7 @@ const createUser = (req, res, next) => {
       if (err.code === 11000) {
         return next(new ConflictError("Email already exists"));
       }
-      return next(new DefaultError("Internal Server Error"));
+      return next(err);
     });
 };
 
@@ -45,11 +45,7 @@ const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
 
   User.findById(userId)
-    .orFail(() => {
-      const error = new Error("User ID not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
-    })
+    .orFail(() => next(new NotFoundError("User ID not found")))
     .then((user) => {
       res.status(200).send(user);
     })
@@ -108,11 +104,7 @@ const updateProfile = (req, res, next) => {
       { name, avatar },
       { new: true, runValidators: true }
     )
-      .orFail(() => {
-        const error = new Error("User ID not found");
-        error.statusCode = NOT_FOUND;
-        throw error;
-      })
+      .orFail(() => next(new NotFoundError("User ID not found")))
       // change the user's info to the new info
       .then((user) => {
         res.status(200).send(user);
