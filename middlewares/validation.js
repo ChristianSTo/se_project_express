@@ -39,7 +39,7 @@ const validateURL = (value, helpers) => {
 };
 
 const updateProfileValidation = celebrate({
-  params: Joi.object().keys({
+  body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     avatar: Joi.string().uri().required().custom(validateURL),
   }),
