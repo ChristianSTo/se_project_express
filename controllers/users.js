@@ -7,7 +7,6 @@ const DefaultError = require("../errors/DefaultError");
 const NotFoundError = require("../errors/NotFoundError");
 const UnauthorizedError = require("../errors/UnauthorizedError");
 
-const { NOT_FOUND } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 // create a user (POST)
